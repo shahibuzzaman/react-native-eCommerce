@@ -4,14 +4,7 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 const CategoryCard = ({item, navigation}) => {
   return (
-    <TouchableOpacity
-      onPress={() => {
-        /* 1. Navigate to the Details route with params */
-        navigation.navigate('Details', {
-          itemId: 86,
-          otherParam: 'anything you want here',
-        });
-      }}>
+    <TouchableOpacity>
       <View
         style={{
           height: 120,

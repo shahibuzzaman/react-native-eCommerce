@@ -1,8 +1,43 @@
 import React, {useState, useEffect} from 'react';
 
-import {View, Text, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  Dimensions,
+} from 'react-native';
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
+
+const {width: WIDTH} = Dimensions.get('screen');
+
+import Carousel from './Carousel';
+
+const dummyData = [
+  {
+    title: 'Anise Aroma Art Bazar',
+    url: 'https://i.ibb.co/hYjK44F/anise-aroma-art-bazaar-277253.jpg',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    id: 1,
+  },
+  {
+    title: 'Food inside a Bowl',
+    url: 'https://i.ibb.co/JtS24qP/food-inside-bowl-1854037.jpg',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    id: 2,
+  },
+  {
+    title: 'Vegatable Salad',
+    url:
+      'https://i.ibb.co/JxykVBt/flat-lay-photography-of-vegetable-salad-on-plate-1640777.jpg',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+    id: 3,
+  },
+];
 
 const HomeScreen = ({navigation}) => {
   const [isLoading, setLoading] = useState(true);
@@ -23,18 +58,24 @@ const HomeScreen = ({navigation}) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('Details', {
+          navigation.navigate('Products', {
             categorySlug: item.slug,
           });
         }}>
         <View
           style={{
             height: 120,
-            width: 130,
+            width: 126,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'white',
             margin: 2,
+            borderRadius: 10,
+            shadowColor: '#222',
+            shadowOffset: {width: 0.5, height: 0.5},
+            shadowOpacity: 0.5,
+            shadowRadius: 10,
+            elevation: 2,
           }}>
           <Text style={{fontSize: 16}}>{item.name}</Text>
         </View>
@@ -45,33 +86,21 @@ const HomeScreen = ({navigation}) => {
   const keyExtractor = (item) => String(item.id);
 
   return (
-    <View style={{flex: 1}}>
-      <View
-        style={{
-          height: 200,
-          backgroundColor: 'red',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Text
-          style={{
-            fontSize: 20,
-            color: 'white',
-          }}>
-          Slide
-        </Text>
-        {/* <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
-      /> */}
+    <View style={{flex: 1, backgroundColor: 'white'}}>
+      <View style={{height: 270, marginBottom: 15}}>
+        <Carousel />
       </View>
       <View style={{padding: 10}}>
-        <FlatList
-          data={categories}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          numColumns={3}
-        />
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={categories}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            numColumns={3}
+          />
+        )}
       </View>
     </View>
   );

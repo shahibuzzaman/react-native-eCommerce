@@ -11,20 +11,38 @@ import {
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './components/screens/HomeScreen';
 import ProfileScreen from './components/screens/ProfileScreen';
 import NotificationScreen from './components/screens/NotificationScreen';
 import CartScreen from './components/screens/CartScreen';
-import DetailsScreen from './components/DetailsScreen';
+import ProductsScreen from './components/ProductsScreen';
+import ProductDetails from './components/ProductDetails';
+import CartIconBadge from './components/CartIconBadge';
+
+import ShoppingCartIcon from './components/ShoppingCartIcon';
+
+import {Provider} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
+import ReduxThunk from 'redux-thunk';
+import reducers from './reducers';
+import SearchBar from './components/SearchBar';
 
 const HomeStack = createStackNavigator();
 
 const HomeStackScreen = () => {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen name="Home" component={HomeScreen} />
-      <HomeStack.Screen name="Details" component={DetailsScreen} />
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={({navigation}) => ({
+          title: '',
+          headerRight: () => <SearchBar navigation={navigation} />,
+        })}
+      />
+      <HomeStack.Screen name="Products" component={ProductsScreen} />
+      <HomeStack.Screen name="Product Details" component={ProductDetails} />
     </HomeStack.Navigator>
   );
 };
@@ -65,37 +83,62 @@ const ProfileStackScreen = () => {
 const Tab = createBottomTabNavigator();
 
 const App = () => {
+  const state = createStore(reducers, {}, applyMiddleware(ReduxThunk));
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size}) => {
-            let iconName;
-
-            if (route.name === 'Home') {
-              iconName = focused ? 'ios-home' : 'ios-home';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'md-contact' : 'md-contact';
-            } else if (route.name === 'Notifications') {
-              iconName = focused ? 'ios-notifications' : 'ios-notifications';
-            } else if (route.name === 'Cart') {
-              iconName = focused ? 'md-cart' : 'md-cart';
-            }
-
-            // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: 'tomato',
-          inactiveTintColor: 'gray',
-        }}>
-        <Tab.Screen name="Home" component={HomeStackScreen} />
-        <Tab.Screen name="Notifications" component={NotificationStackScreen} />
-        <Tab.Screen name="Cart" component={CartStackScreen} />
-        <Tab.Screen name="Profile" component={ProfileStackScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Provider store={state}>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({route}) => ({
+            tabBarIcon: ({focused, color, size}) => {
+              if (route.name === 'Home') {
+                return (
+                  <Icon
+                    name={focused ? 'ios-home' : 'ios-home'}
+                    size={size}
+                    color={color}
+                  />
+                );
+              } else if (route.name === 'Notifications') {
+                return (
+                  <Icon
+                    name={focused ? 'ios-notifications' : 'ios-notifications'}
+                    size={size}
+                    color={color}
+                  />
+                );
+              } else if (route.name === 'Cart') {
+                return (
+                  <ShoppingCartIcon
+                    name={focused ? 'md-cart' : 'md-cart'}
+                    size={size}
+                    color={color}
+                  />
+                );
+              } else if (route.name === 'Profile') {
+                return (
+                  <Icon
+                    name={focused ? 'md-contact' : 'md-contact'}
+                    size={size}
+                    color={color}
+                  />
+                );
+              }
+            },
+          })}
+          tabBarOptions={{
+            activeTintColor: 'tomato',
+            inactiveTintColor: 'gray',
+          }}>
+          <Tab.Screen name="Home" component={HomeStackScreen} />
+          <Tab.Screen
+            name="Notifications"
+            component={NotificationStackScreen}
+          />
+          <Tab.Screen name="Cart" component={CartStackScreen} />
+          <Tab.Screen name="Profile" component={ProfileStackScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 };
 export default App;

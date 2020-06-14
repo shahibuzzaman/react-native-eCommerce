@@ -1,8 +1,20 @@
 import React, {useState, useEffect} from 'react';
 
-import {View, Text, FlatList} from 'react-native';
+import {Button, Card, Icon} from 'react-native-elements';
+import SnackBar from 'react-native-snackbar-component';
+import {postCart} from '../actions';
+import {connect} from 'react-redux';
+import {
+  Image,
+  Text,
+  View,
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
+import Products from './Products';
 
-const DetailsScreen = ({route, navigation}) => {
+const ProductsScreen = ({route, navigation}) => {
   const {categorySlug} = route.params;
 
   const [isLoading, setLoading] = useState(true);
@@ -22,26 +34,27 @@ const DetailsScreen = ({route, navigation}) => {
   }, []);
 
   const renderItem = ({item, index}) => {
-    return (
-      <View>
-        <Text>{item.title}</Text>
-      </View>
-    );
+    return <Products item={item} navigation={navigation} />;
   };
 
   const keyExtractor = (item) => String(item.id);
 
   return (
     <View style={{flex: 1}}>
-      <View style={{padding: 10}}>
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-        />
+      <View style={{}}>
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={data}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            numColumns={2}
+          />
+        )}
       </View>
     </View>
   );
 };
 
-export default DetailsScreen;
+export default connect(null, {postCart})(ProductsScreen);
