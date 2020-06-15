@@ -34,7 +34,11 @@ const ProductsScreen = ({route, navigation}) => {
   }, []);
 
   const renderItem = ({item, index}) => {
-    return <Products item={item} navigation={navigation} />;
+    return (
+      <View style={{padding: 0}}>
+        <Products item={item} navigation={navigation} />
+      </View>
+    );
   };
 
   const keyExtractor = (item) => String(item.id);

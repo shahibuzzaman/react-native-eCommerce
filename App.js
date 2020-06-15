@@ -27,6 +27,7 @@ import {createStore, applyMiddleware} from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reducers from './reducers';
 import SearchBar from './components/SearchBar';
+import SearchBarProducts from './components/SearchBarProducts';
 
 const HomeStack = createStackNavigator();
 
@@ -41,7 +42,14 @@ const HomeStackScreen = () => {
           headerRight: () => <SearchBar navigation={navigation} />,
         })}
       />
-      <HomeStack.Screen name="Products" component={ProductsScreen} />
+      <HomeStack.Screen
+        name="Products"
+        component={ProductsScreen}
+        options={({navigation}) => ({
+          title: '',
+          headerRight: () => <SearchBarProducts navigation={navigation} />,
+        })}
+      />
       <HomeStack.Screen name="Product Details" component={ProductDetails} />
     </HomeStack.Navigator>
   );
@@ -126,7 +134,7 @@ const App = () => {
             },
           })}
           tabBarOptions={{
-            activeTintColor: 'tomato',
+            activeTintColor: 'black',
             inactiveTintColor: 'gray',
           }}>
           <Tab.Screen name="Home" component={HomeStackScreen} />

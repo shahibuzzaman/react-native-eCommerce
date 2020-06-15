@@ -57,7 +57,7 @@ class ShoppingListScreen extends Component {
 
         <TouchableOpacity
           style={styles.shareButton}
-          onPress={() => this.clickEventListener()}>
+          onPress={() => alert('OK')}>
           <Text style={styles.shareButtonText}>Place an Order</Text>
         </TouchableOpacity>
       </View>

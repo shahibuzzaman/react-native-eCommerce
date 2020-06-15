@@ -14,30 +14,7 @@ const {width: WIDTH} = Dimensions.get('screen');
 
 import Carousel from './Carousel';
 
-const dummyData = [
-  {
-    title: 'Anise Aroma Art Bazar',
-    url: 'https://i.ibb.co/hYjK44F/anise-aroma-art-bazaar-277253.jpg',
-    description:
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    id: 1,
-  },
-  {
-    title: 'Food inside a Bowl',
-    url: 'https://i.ibb.co/JtS24qP/food-inside-bowl-1854037.jpg',
-    description:
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    id: 2,
-  },
-  {
-    title: 'Vegatable Salad',
-    url:
-      'https://i.ibb.co/JxykVBt/flat-lay-photography-of-vegetable-salad-on-plate-1640777.jpg',
-    description:
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    id: 3,
-  },
-];
+const categoryImage = [];
 
 const HomeScreen = ({navigation}) => {
   const [isLoading, setLoading] = useState(true);
@@ -65,11 +42,11 @@ const HomeScreen = ({navigation}) => {
         <View
           style={{
             height: 120,
-            width: 126,
+            width: 123,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'white',
-            margin: 2,
+            margin: 4,
             borderRadius: 10,
             shadowColor: '#222',
             shadowOffset: {width: 0.5, height: 0.5},

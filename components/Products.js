@@ -36,8 +36,7 @@ class Products extends Component {
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: 'white',
-              margin: 0,
-              padding: 20,
+
               borderRadius: 10,
               shadowColor: '#222',
               shadowOffset: {width: 0.5, height: 0.5},
