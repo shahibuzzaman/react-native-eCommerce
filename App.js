@@ -28,6 +28,8 @@ import ReduxThunk from 'redux-thunk';
 import reducers from './reducers';
 import SearchBar from './components/SearchBar';
 import SearchBarProducts from './components/SearchBarProducts';
+import SearchList from './components/Search/SearchList';
+import SearchListHeader from './components/SearchListHeader';
 
 const HomeStack = createStackNavigator();
 
@@ -47,10 +49,17 @@ const HomeStackScreen = () => {
         component={ProductsScreen}
         options={({navigation}) => ({
           title: '',
-          headerRight: () => <SearchBarProducts navigation={navigation} />,
+          headerShown: false,
         })}
       />
       <HomeStack.Screen name="Product Details" component={ProductDetails} />
+      <HomeStack.Screen
+        name="Search"
+        component={SearchList}
+        options={({navigation}) => ({
+          headerShown: false,
+        })}
+      />
     </HomeStack.Navigator>
   );
 };

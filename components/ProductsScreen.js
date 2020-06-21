@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {Component} from 'react';
 
-import {Button, Card, Icon} from 'react-native-elements';
+import {Button, Card, SearchBar} from 'react-native-elements';
 import SnackBar from 'react-native-snackbar-component';
 import {postCart} from '../actions';
 import {connect} from 'react-redux';
@@ -13,52 +13,99 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Products from './Products';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const ProductsScreen = ({route, navigation}) => {
-  const {categorySlug} = route.params;
+class ProductsScreen extends Component {
+  constructor(props) {
+    super(props);
 
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+    this.state = {
+      loading: false,
+      data: [],
+      error: null,
+      categorySlug: this.props.route.params.categorySlug,
+      navigation: this.props.navigation,
+    };
 
-  const api =
-    'https://fadoll.com/wc-api/v3/products/?&filter[category]=' +
-    categorySlug +
-    '&consumer_key=ck_dd172b0edbf112bd76904a6112291370a4403aaf&consumer_secret=cs_b989504ffc25f1e7e538e107001c1091871557dc';
+    this.arrayholder = [];
+  }
 
-  useEffect(() => {
-    fetch(api)
-      .then((response) => response.json())
-      .then((json) => setData(json.products))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, []);
+  componentDidMount() {
+    this.makeRemoteRequest();
+  }
 
-  const renderItem = ({item, index}) => {
+  makeRemoteRequest = () => {
+    const url =
+      'https://fadoll.com/wc-api/v3/products/?&filter[category]=' +
+      this.state.categorySlug +
+      '&consumer_key=ck_dd172b0edbf112bd76904a6112291370a4403aaf&consumer_secret=cs_b989504ffc25f1e7e538e107001c1091871557dc';
+    this.setState({loading: true});
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+        this.setState({
+          data: res.products,
+          error: res.error || null,
+          loading: false,
+        });
+        this.arrayholder = res.products;
+      })
+      .catch((error) => {
+        this.setState({error, loading: false});
+      });
+  };
+
+  searchFilterFunction = (text) => {
+    this.setState({
+      value: text,
+    });
+
+    const newData = this.arrayholder.filter((item) => {
+      const itemData = `${item.title.toUpperCase()} `;
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({
+      data: newData,
+    });
+  };
+
+  renderHeader = () => {
     return (
-      <View style={{padding: 0}}>
-        <Products item={item} navigation={navigation} />
+      <View>
+        <SearchBar
+          placeholder="Type Here..."
+          lightTheme
+          round
+          onChangeText={(text) => this.searchFilterFunction(text)}
+          autoCorrect={false}
+          value={this.state.value}
+        />
       </View>
     );
   };
 
-  const keyExtractor = (item) => String(item.id);
-
-  return (
-    <View style={{flex: 1}}>
-      <View style={{}}>
-        {isLoading ? (
-          <ActivityIndicator />
-        ) : (
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-            numColumns={2}
-          />
-        )}
+  render() {
+    return (
+      <View>
+        <FlatList
+          data={this.state.data}
+          renderItem={({item, index}) => {
+            return (
+              <View style={{padding: 0}}>
+                <Products item={item} navigation={this.state.navigation} />
+              </View>
+            );
+          }}
+          keyExtractor={(item) => String(item.id)}
+          ListHeaderComponent={this.renderHeader}
+          numColumns={2}
+        />
       </View>
-    </View>
-  );
-};
+    );
+  }
+}
 
 export default connect(null, {postCart})(ProductsScreen);
