@@ -9,25 +9,44 @@ import {
   StyleSheet,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {getCarts, deleteCart} from '../../actions';
+import {getCarts, deleteCart, updateCart} from '../../actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {
   TouchableHighlight,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
+import auth from '@react-native-firebase/auth';
+import firebase from '../../firebase';
+import DeviceInfo from 'react-native-device-info';
 
 class Item extends Component {
+  state = {
+    user: {},
+    cartList: [{a: 'dfs', b: '3434'}],
+  };
+
+  // onAuthStateChanged(user) {
+  //   this.setState({user: user});
+  // }
+
   componentDidMount() {
     this.props.getCarts();
+    auth().onAuthStateChanged((user) => {
+      this.setState({user: user});
+    });
   }
 
   render() {
     let total = 0;
 
     this.props.listOfCarts.forEach((item) => {
-      total = total + parseInt(item.price);
+      let mul = parseInt(item.price) * parseInt(item.qnt);
+      total = total + mul;
+      console.log('total', total);
     });
+
+    console.log('list of carts', this.props.listOfCarts);
 
     return (
       <ScrollView>
@@ -47,6 +66,14 @@ class Item extends Component {
 
               <View style={styles.counterStyle}>
                 <Icon.Button
+                  onPress={() =>
+                    this.props.updateCart(
+                      item.key,
+                      item.title,
+                      item.price,
+                      item.qnt > 1 ? item.qnt - 1 : 1,
+                    )
+                  }
                   name="ios-remove"
                   size={25}
                   color="#fff"
@@ -60,9 +87,17 @@ class Item extends Component {
                   iconStyle={{marginRight: 0}}
                 />
 
-                <Text>{1}</Text>
+                <Text>{item.qnt}</Text>
 
                 <Icon.Button
+                  onPress={() =>
+                    this.props.updateCart(
+                      item.key,
+                      item.title,
+                      item.price,
+                      item.qnt < 100 ? item.qnt + 1 : 100,
+                    )
+                  }
                   name="ios-add"
                   size={25}
                   color="#fff"
@@ -114,7 +149,53 @@ class Item extends Component {
             margin: 20,
             borderRadius: 3,
           }}>
-          <Text style={{color: '#fff', fontSize: 24}}>Go to checkout</Text>
+          {this.state.user ? (
+            <Text
+              onPress={() => {
+                var data = [];
+
+                this.props.listOfCarts.forEach((item) => {
+                  var obj = {};
+                  (obj.title = item.title),
+                    (obj.price = item.price),
+                    (obj.qnt = item.qnt);
+                  data.push(obj);
+                });
+
+                var userRef = firebase
+                  .database()
+                  .ref('/users/' + this.state.user.phoneNumber);
+
+                userRef.once('value', function (snapshot) {
+                  var address = snapshot.val().address;
+                  var phone = snapshot.val().phone;
+                  var orderRef = firebase.database().ref('/orders');
+                  orderRef.push({
+                    phone: phone,
+                    address: address,
+                    total: total,
+                    products: data,
+                  });
+                });
+
+                const uniqueId = DeviceInfo.getUniqueId();
+                var cartRef = firebase.database().ref('/cart');
+                cartRef.child(uniqueId).remove();
+              }}
+              style={{color: '#fff', fontSize: 24}}>
+              Go to checkout
+            </Text>
+          ) : (
+            <Text
+              onPress={() => {
+                this.props.navigation.push('AuthAndInfo', {
+                  otherParam: 'anything you want here',
+                });
+              }}
+              style={{color: '#fff', fontSize: 24}}>
+              Go to checkout
+            </Text>
+          )}
         </View>
       </ScrollView>
     );
@@ -178,4 +259,6 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, {getCarts, deleteCart})(Item);
+export default connect(mapStateToProps, {getCarts, deleteCart, updateCart})(
+  Item,
+);

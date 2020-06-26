@@ -16,6 +16,7 @@ import HomeScreen from './components/screens/HomeScreen';
 import ProfileScreen from './components/screens/ProfileScreen';
 import NotificationScreen from './components/screens/NotificationScreen';
 import CartScreen from './components/screens/CartScreen';
+import AuthAndInfo from './components/screens/AuthAndInfo';
 import ProductsScreen from './components/ProductsScreen';
 import ProductDetails from './components/ProductDetails';
 import CartIconBadge from './components/CartIconBadge';
@@ -83,6 +84,7 @@ const CartStackScreen = () => {
   return (
     <CartStack.Navigator>
       <CartStack.Screen name="Cart" component={CartScreen} />
+      <CartStack.Screen name="AuthAndInfo" component={AuthAndInfo} />
     </CartStack.Navigator>
   );
 };
